@@ -1,2 +1,15 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+.status-new {
+    --background: #e6f0ff;
+  }
+  .status-inProgress {
+    --background: #ffe6e6;
+  }
+  .status-submitted {
+    --background: #e6f9ff;
+  }
+  .status-completed {
+    --background: #e6ffe6;
+  }
+  

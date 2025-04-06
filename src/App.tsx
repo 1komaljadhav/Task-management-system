@@ -2,7 +2,8 @@ import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
-
+import Login from './pages/Login';
+import TaskStatus from './pages/TaskStatus';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -32,21 +33,29 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import AssignTask from './pages/AssignTask';
+import Departments from './pages/Departments';
+import DailyTaskUpdate from './pages/DailyTaskUpdate';
+import EmployeeDashboard from './pages/EmployeeDashboard';
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
+  <IonRouterOutlet>
+  <Route path="/tasks/:dept" component={TaskStatus} exact />
+  <Route path="/task-status" component={TaskStatus} exact />
+  <Route path="/assign-task" component={AssignTask} exact />
+  <Route exact path="/departments" component={Departments} />
+  <Route exact path="/daily-task-update" component={DailyTaskUpdate} />
+   <Route exact path="/home" component={Home} />
+   <Route exact path="/emp-dashboard" component={EmployeeDashboard} />
+    <Route exact path="/login" component={Login} />
+   <Redirect exact from="/" to="/login" />
+  </IonRouterOutlet>
+</IonReactRouter>
+
   </IonApp>
 );
 
