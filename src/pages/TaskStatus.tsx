@@ -1,99 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonSegment, IonSegmentButton, IonLabel, IonCard, IonCardHeader,
-  IonCardTitle, IonCardContent, IonButton, IonButtons, IonRow, IonCol, IonGrid
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonButton,
 } from '@ionic/react';
-import { useHistory } from 'react-router-dom'; // Import useHistory
-
-type Task = {
-  id: number;
-  title: string;
-  desc?: string;
-  assignedTo?: string;
-  status: 'new' | 'inProgress' | 'submitted' | 'completed';
-  date: string;
-};
 
 const TaskStatus: React.FC = () => {
-  const history = useHistory(); // Hook for navigation
+  const [tasks, setTasks] = useState<any[]>([]); // Mock tasks
+  const [filteredTasks, setFilteredTasks] = useState<any[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState('New');
+  const userRole = localStorage.getItem('userRole'); // Get role from localStorage
 
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Task One', status: 'new', date: '24/03 - 26/03' },
-    { id: 2, title: 'Task Two', status: 'new', date: '25/03 - 28/03' },
-    { id: 3, title: 'Task Three', status: 'submitted', date: '24/03 - 26/03', desc: 'Desc here', assignedTo: 'HOD' },
-    { id: 4, title: 'Task Four', status: 'inProgress', date: '26/03 - 29/03' },
-    { id: 5, title: 'Task Five', status: 'completed', date: '22/03 - 24/03' },
-  ]);
+  // Mock task data
+  const mockTasks = [
+    { id: 1, title: 'Task 1', status: 'New', assignedTo: 'Employee', department: 'HR' },
+    { id: 2, title: 'Task 2', status: 'In Progress', assignedTo: 'HOD', department: 'Finance' },
+    { id: 3, title: 'Task 3', status: 'Submitted', assignedTo: 'Employee', department: 'IT' },
+    { id: 4, title: 'Task 4', status: 'Complete', assignedTo: 'MD', department: 'HR' },
+  ];
 
-  const [selectedStatus, setSelectedStatus] = useState<'new' | 'inProgress' | 'submitted' | 'completed'>('new');
+  useEffect(() => {
+    // Simulate fetching tasks based on role
+    if (userRole === 'Employee') {
+      setTasks(mockTasks.filter((task) => task.assignedTo === 'Employee'));
+    } else if (userRole === 'HOD') {
+      setTasks(mockTasks.filter((task) => task.department === 'Finance')); // Example for HOD
+    } else if (userRole === 'MD') {
+      setTasks(mockTasks); // MD sees all tasks
+    }
+  }, [userRole]);
 
-  const updateStatus = (id: number, newStatus: Task['status']) => {
-    setTasks(prev =>
-      prev.map(task => (task.id === id ? { ...task, status: newStatus } : task))
-    );
-  };
-
-  const filteredTasks = tasks.filter(task => task.status === selectedStatus);
+  useEffect(() => {
+    // Filter tasks by selected status
+    setFilteredTasks(tasks.filter((task) => task.status === selectedStatus));
+  }, [tasks, selectedStatus]);
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Status</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={() => history.push('/assign-task')}>+ Assign Task</IonButton>
-          </IonButtons>
+          <IonTitle>Task Status</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className={`ion-padding status-${selectedStatus}`}>
+      <IonContent className="ion-padding">
+        {/* Status Tabs */}
+        <IonSegment
+          value={selectedStatus}
+          onIonChange={(e) => setSelectedStatus(e.detail.value as string)}
+        >
+          <IonSegmentButton value="New">
+            <IonLabel>New</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="In Progress">
+            <IonLabel>In Progress</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="Submitted">
+            <IonLabel>Submitted</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="Complete">
+            <IonLabel>Complete</IonLabel>
+          </IonSegmentButton>
+        </IonSegment>
 
-        <div className="status-buttons ion-text-center ion-margin-bottom">
-          <IonSegment value={selectedStatus} onIonChange={(e) => setSelectedStatus(e.detail.value as any)}>
-            <IonSegmentButton value="new"><IonLabel>New Tasks ({tasks.filter(t => t.status === 'new').length})</IonLabel></IonSegmentButton>
-            <IonSegmentButton value="inProgress"><IonLabel>In Process ({tasks.filter(t => t.status === 'inProgress').length})</IonLabel></IonSegmentButton>
-            <IonSegmentButton value="submitted"><IonLabel>Submitted ({tasks.filter(t => t.status === 'submitted').length})</IonLabel></IonSegmentButton>
-            <IonSegmentButton value="completed"><IonLabel>Completed ({tasks.filter(t => t.status === 'completed').length})</IonLabel></IonSegmentButton>
-          </IonSegment>
-        </div>
-
-        {filteredTasks.map(task => (
-          <IonCard key={task.id} color="light">
-            <IonCardHeader>
-              <IonCardTitle>{task.title}</IonCardTitle>
-              <p>{task.date}</p>
-            </IonCardHeader>
-            <IonCardContent>
-              {task.desc && <p><strong>Description:</strong> {task.desc}</p>}
-              {task.assignedTo && <p><strong>Assigned to:</strong> {task.assignedTo}</p>}
-
-              {/* Buttons based on status */}
-              {task.status === 'new' && (
-                <IonButtons>
-                  <IonButton onClick={() => updateStatus(task.id, 'inProgress')}>Start</IonButton>
-                  <IonButton color="medium" fill="outline">Close</IonButton>
-                </IonButtons>
+        {/* Task List */}
+        <IonList>
+          {filteredTasks.map((task) => (
+            <IonItem key={task.id}>
+              <IonLabel>
+                <h2>{task.title}</h2>
+                <p>Status: {task.status}</p>
+              </IonLabel>
+              {userRole === 'Employee' && task.status === 'New' && (
+                <IonButton
+                  slot="end"
+                  onClick={() => alert(`Marking Task ${task.id} as In Progress`)}
+                >
+                  Start
+                </IonButton>
               )}
-              {task.status === 'inProgress' && (
-                <IonButtons>
-                  <IonButton onClick={() => updateStatus(task.id, 'submitted')}>Submit</IonButton>
-                  <IonButton color="medium" fill="outline">Close</IonButton>
-                </IonButtons>
-              )}
-              {task.status === 'submitted' && (
-                <IonButtons>
-                  <IonButton onClick={() => updateStatus(task.id, 'completed')}>Mark Completed</IonButton>
-                  <IonButton onClick={() => updateStatus(task.id, 'inProgress')} color="warning">Unsubmit</IonButton>
-                </IonButtons>
-              )}
-              {task.status === 'completed' && (
-                <IonLabel color="success">✔️ Task Completed</IonLabel>
-              )}
-            </IonCardContent>
-          </IonCard>
-        ))}
-
+            </IonItem>
+          ))}
+        </IonList>
       </IonContent>
     </IonPage>
   );

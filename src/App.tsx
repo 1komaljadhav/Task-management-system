@@ -4,6 +4,9 @@ import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import TaskStatus from './pages/TaskStatus';
+import Dashboard from './pages/Dashboard';
+import MonthlyReport from './pages/MonthlyReport';
+import ConsolidatedReport from './pages/ConsolidatedReport';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -48,6 +51,9 @@ const App: React.FC = () => (
   <Route path="/task-status" component={TaskStatus} exact />
   <Route path="/assign-task" component={AssignTask} exact />
   <Route exact path="/departments" component={Departments} />
+  <Route path="/dashboard" component={Dashboard} />
+  <Route path="/monthly-report" component={MonthlyReport} />
+  <Route path="/consolidated-report" component={ConsolidatedReport} />
   <Route exact path="/daily-task-update" component={DailyTaskUpdate} />
    <Route exact path="/home" component={Home} />
    <Route exact path="/emp-dashboard" component={EmployeeDashboard} />
